@@ -1,0 +1,15 @@
+---
+  - name: IPTABLES | Create Essential Rules
+    iptables: "{{ item }}"
+    with_items:
+      - { chain: "INPUT", in_interface: "lo", jump: "ACCEPT" }
+      - { chain: "OUTPUT", out_interface: "lo", jump: "ACCEPT" }
+      - { chain: "OUTPUT", out_interface: "lo", jump: "ACCEPT" }
+      - { chain: "INPUT", match: "conntrack", ctstate: ["ESTABLISHED", "RELATED"], jump: "ACCEPT"}
+      - { chain: "OUTPUT", match: "conntrack", ctstate: ["ESTABLISHED"], jump: "ACCEPT"}
+      - { chain: "INPUT", match: "conntrack", ctstate: ["INVALID"], jump: "DROP"}
+
+  - name: IPTABLES | Create Custom Rules
+    iptables: "{{ item }}"
+    with_items: "{{ iptables.rules }}"
+    when: "'iptables.rules' is defined"
